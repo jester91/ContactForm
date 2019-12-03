@@ -1,0 +1,268 @@
+<?php $connect=mysqli_connect("localhost","root","","mysql");
+function make_query($connect){
+	$query ="select * from banner order by banner_id asc";
+	$result=mysqli_query($connect,$query);
+	return $result;
+}
+function make_slide_indicators($connect){
+	$output='';
+	$count=0;
+	$result=make_query($connect);
+	while($row=mysqli_fetch_array($result)){
+		if($count==0){
+			$output .= '
+   <li data-target="#dynamic_slide_show" data-slide-to="'.$count.'" class="active"></li>
+   ';
+  }else{
+	$output .= '
+	<li data-target="#dynamic_slide_show" data-slide-to="'.$count.'"></li>
+	';
+		}
+		$count=$count+1;
+	}
+	return $output;
+}
+
+function make_slides($connect){
+	$output='';
+	$count=0;
+	$result=make_query($connect);
+	while($row=mysqli_fetch_array($result))
+	{
+		if($count==0){
+			$output .='<div class="item active">';
+		}
+		else
+		{
+			$output .='<div class="item">';
+		}
+		$output .= '
+		<img src="banner/'.$row["banner_image"].'" alt="'.$row["banner_title"].'" />
+		<div class="carousel-caption">
+		 <h3>'.$row["banner_title"].'</h3>
+		</div>
+	   </div>
+	   ';
+	   $count = $count + 1;
+	}
+	return $output;
+}
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Contact V17</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->
+	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="css/util.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<!--===============================================================================================-->
+	<script src="https://www.gstatic.com/firebasejs/5.9.3/firebase.js"></script>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+	
+
+	<div class="container-contact100">
+		<div class="wrap-contact100">
+			<form id="contactForm" action="insert.php" method="POST" class="contact100-form validate-form">
+				<span class="contact100-form-title">
+					Send Us A Message
+				</span>
+
+				<label class="label-input100" for="fname" required>Tell us your name *</label>
+				<div class="wrap-input100 rs1-wrap-input100 validate-input" data-validate="Type first name">
+					<input id="fname" class="input100" type="text" name="fname" placeholder="First name">
+					<span class="focus-input100"></span>
+				</div>
+				<div class="wrap-input100 rs2-wrap-input100 validate-input" data-validate="Type last name" for="lname" required>
+					<input id="lname" class="input100" type="text" name="lname" placeholder="Last name">
+					<span class="focus-input100"></span>
+				</div>
+
+				<label class="label-input100" for="email" required>Enter your email *</label>
+				<div class="wrap-input100 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
+					<input id="email" class="input100" type="text" name="email" placeholder="Eg. example@email.com">
+					<span class="focus-input100"></span>
+				</div>
+
+				<label class="label-input100" for="phone" >Enter phone number</label>
+				<div class="wrap-input100">
+					<input id="phone" class="input100" type="number" name="phone" placeholder="Eg. +1 800 000000">
+					<span class="focus-input100"></span>
+				</div>
+
+				<label class="label-input100" for="address">Enter address</label>
+				<div class="wrap-input100">
+					<input id="address" class="input100" type="text" name="address" placeholder="Eg. Washington, DC 20521-2050">
+					<span class="focus-input100"></span>
+				</div>
+
+				<label class="label-input100" for="comment" required>Message *</label>
+				<div class="wrap-input100 validate-input" data-validate = "Message is required">
+					<textarea id="comment" class="input100" name="comment" placeholder="Write us a message"></textarea>
+					<span class="focus-input100"></span>
+				</div>
+
+				<div class="container-contact100-form-btn">
+					<button class="contact100-form-btn">
+						Send Message
+					</button>
+				</div>
+			</form>
+			
+			<div id="dynamic_slide_show" class="contact100-more flex-col-c-m carousel slide" data-ride="carousel" style="background-image: url('images/bg-01.jpg');">
+			
+
+				<div class="flex-w size1 p-b-47">
+					<div class="txt1 p-r-25">
+						<span class="lnr lnr-map-marker"></span>
+					</div>
+
+					<div class="flex-col size2">
+						<span class="txt1 p-b-20">
+							Address
+						</span>
+
+						<span class="txt2">
+							Mada Center 8th floor, 379 Hudson St, New York, NY 10018 US
+						</span>
+					</div>
+				</div>
+
+				<div class="dis-flex size1 p-b-47">
+					<div class="txt1 p-r-25">
+						<span class="lnr lnr-phone-handset"></span>
+					</div>
+
+					<div class="flex-col size2">
+						<span class="txt1 p-b-20">
+							Lets Talk
+						</span>
+
+						<span class="txt3">
+							+1 800 1236879
+						</span>
+					</div>
+				</div>
+
+				<div class="dis-flex size1 p-b-47">
+					<div class="txt1 p-r-25">
+						<span class="lnr lnr-envelope"></span>
+					</div>
+
+					<div class="flex-col size2">
+						<span class="txt1 p-b-20">
+							General Support
+						</span>
+
+						<a href="mailto:contact@example.com" class="txt3">
+							contact@example.com
+						</a>
+					</div>
+                	<!--<ol class="carousel-indicator">
+					<?php echo make_slide_indicators($connect); ?>
+				</ol>
+				<div class="carousel-inner">
+                    <?php echo make_slides($connect);?>
+                </div>
+                <a class="left carousel-control" href="#dynamic_slide_show" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+
+                <a class="right carousel-control" href="#dynamic_slide_show" data-slide="next">
+                     <span class="glyphicon glyphicon-chevron-right"></span>
+                      <span class="sr-only">Next</span>
+               </a>
+                </div>-->
+                
+			</div>
+		</div>
+	</div>
+	
+
+
+	
+
+<!--===============================================================================================-->
+	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/animsition/js/animsition.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/bootstrap/js/popper.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/select2/select2.min.js"></script>
+	<script>
+		$(".selection-2").select2({
+			minimumResultsForSearch: 20,
+			dropdownParent: $('#dropDownSelect1')
+		});
+	</script>
+<!--===============================================================================================-->
+	<script src="vendor/daterangepicker/moment.min.js"></script>
+	<script src="vendor/daterangepicker/daterangepicker.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/countdowntime/countdowntime.js"></script>
+<!--===============================================================================================-->
+	<script src="js/main.js"></script>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'UA-23581568-13');
+	</script>
+	<!--===============================================================================================-->
+
+	
+	
+
+<script type="text/javascript">
+    $(function(){
+        //prepare Your data array with img urls
+        var dataArray=new Array();
+        dataArray[0]="images/bg-01.jpg";
+        dataArray[1]="images/bg-02.jpg";
+        dataArray[2]="images/bg-03.jpg";
+        dataArray[3]="images/bg-04.jpg";
+
+        //start with id=0 after 5 seconds
+        var thisId=0;
+
+        window.setInterval(function(){
+            $('#thisImg').attr('src',dataArray[thisId]);
+            thisId++; //increment data array id
+            if (thisId==3) thisId=0; //repeat from start
+        },5000);        
+    });
+</script>
+</body>
+</html>
